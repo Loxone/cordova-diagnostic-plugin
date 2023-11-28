@@ -19,6 +19,8 @@ static NSString*const LOG_TAG = @"Diagnostic_Notifications[native]";
 static NSString*const REMOTE_NOTIFICATIONS_ALERT = @"alert";
 static NSString*const REMOTE_NOTIFICATIONS_SOUND = @"sound";
 static NSString*const REMOTE_NOTIFICATIONS_BADGE = @"badge";
+static NSString*const REMOTE_NOTIFICATIONS_TIME_SENSITIVE = @"timeSensitive";
+static NSString*const REMOTE_NOTIFICATIONS_CRITICAL = @"critical";
 
 - (void)pluginInitialize {
     
@@ -63,8 +65,13 @@ static NSString*const REMOTE_NOTIFICATIONS_BADGE = @"badge";
                 BOOL alertsEnabled = settings.alertSetting == UNNotificationSettingEnabled;
                 BOOL badgesEnabled = settings.badgeSetting == UNNotificationSettingEnabled;
                 BOOL soundsEnabled = settings.soundSetting == UNNotificationSettingEnabled;
-                BOOL noneEnabled = !alertsEnabled && !badgesEnabled && !soundsEnabled;
-                [self getRemoteNotificationTypesResult:command:noneEnabled:alertsEnabled:badgesEnabled:soundsEnabled];
+                BOOL timeSensitiveEnabled = false;
+                BOOL criticalEnabled = settings.criticalAlertSetting == UNNotificationSettingEnabled;
+                if (@available(iOS 15.0, *)) {
+                    timeSensitiveEnabled = settings.timeSensitiveSetting == UNNotificationSettingEnabled;
+                }
+                BOOL noneEnabled = !alertsEnabled && !badgesEnabled && !soundsEnabled && !timeSensitiveEnabled && !criticalEnabled;
+                [self getRemoteNotificationTypesResult:command:noneEnabled:alertsEnabled:badgesEnabled:soundsEnabled:timeSensitiveEnabled:criticalEnabled];
             }];
         }
         @catch (NSException *exception) {
@@ -72,7 +79,7 @@ static NSString*const REMOTE_NOTIFICATIONS_BADGE = @"badge";
         }
     }];
 }
-- (void) getRemoteNotificationTypesResult: (CDVInvokedUrlCommand*)command :(BOOL)noneEnabled :(BOOL)alertsEnabled :(BOOL)badgesEnabled :(BOOL)soundsEnabled
+- (void) getRemoteNotificationTypesResult: (CDVInvokedUrlCommand*)command :(BOOL)noneEnabled :(BOOL)alertsEnabled :(BOOL)badgesEnabled :(BOOL)soundsEnabled :(BOOL)timeSensitiveEnabled :(BOOL)criticalEnabled
 {
     NSMutableDictionary* types = [[NSMutableDictionary alloc]init];
     if(alertsEnabled) {
@@ -89,6 +96,16 @@ static NSString*const REMOTE_NOTIFICATIONS_BADGE = @"badge";
         [types setValue:@"1" forKey:REMOTE_NOTIFICATIONS_SOUND];
     } else {;
         [types setValue:@"0" forKey:REMOTE_NOTIFICATIONS_SOUND];
+    }
+    if(timeSensitiveEnabled) {
+        [types setValue:@"1" forKey:REMOTE_NOTIFICATIONS_TIME_SENSITIVE];
+    } else {;
+        [types setValue:@"0" forKey:REMOTE_NOTIFICATIONS_TIME_SENSITIVE];
+    }
+    if(criticalEnabled) {
+        [types setValue:@"1" forKey:REMOTE_NOTIFICATIONS_CRITICAL];
+    } else {;
+        [types setValue:@"0" forKey:REMOTE_NOTIFICATIONS_CRITICAL];
     }
     [diagnostic sendPluginResultString:[diagnostic objectToJsonString:types]:command];
 }
@@ -181,6 +198,14 @@ static NSString*const REMOTE_NOTIFICATIONS_BADGE = @"badge";
                             options = options + UNAuthorizationOptionSound;
                         }else if([s_key isEqualToString:REMOTE_NOTIFICATIONS_BADGE]){
                             options = options + UNAuthorizationOptionBadge;
+                        }else if([s_key isEqualToString:REMOTE_NOTIFICATIONS_TIME_SENSITIVE]){
+                            if (@available(iOS 15.0, *)) {
+                                options = options + UNAuthorizationOptionTimeSensitive;
+                            } else {
+                                // Fallback on earlier versions
+                            }
+                        }else if([s_key isEqualToString:REMOTE_NOTIFICATIONS_CRITICAL]){
+                            options = options + UNAuthorizationOptionCriticalAlert;
                         }
                     }
 

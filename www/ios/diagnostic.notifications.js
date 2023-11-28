@@ -25,7 +25,9 @@ var Diagnostic_Notifications = (function(){
     Diagnostic.remoteNotificationType = Diagnostic_Notifications.remoteNotificationType = {
         ALERT: "alert",
         SOUND: "sound",
-        BADGE: "badge"
+        BADGE: "badge",
+        TIME_SENSITIVE: "timeSensitive",
+        CRITICAL: "critical"
     };
     
     /********************
@@ -73,6 +75,8 @@ var Diagnostic_Notifications = (function(){
      * cordova.plugins.diagnostic.remoteNotificationType.ALERT => alert style is not set to "None" (i.e. "Banners" or "Alerts").
      * cordova.plugins.diagnostic.remoteNotificationType.BADGE => "Badge App Icon" switch is ON.
      * cordova.plugins.diagnostic.remoteNotificationType.SOUND => "Sounds"/"Alert Sound" switch is ON.
+     * cordova.plugins.diagnostic.remoteNotificationType.TIME_SENSITIVE => "Time Sensitive Alerts" switch is ON (Requires Entitlement).
+     * cordova.plugins.diagnostic.remoteNotificationType.CRITICAL => "Critical Alerts" switch is ON (Requires Entitlements).
      * @param {Function} errorCallback -  The callback which will be called when operation encounters an error.
      * This callback function is passed a single string parameter containing the error message.
      */

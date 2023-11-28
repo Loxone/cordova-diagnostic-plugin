@@ -2508,6 +2508,8 @@ The following notification types are defined:
 - `ALERT` - Permission to display Alerts or Banners
 - `SOUND` - Permission to play sounds.
 - `BADGE` - Permission to change app icon badge.
+- `TIME_SENSITIVE` - Permission to allow time sensitive notifications (Requires entitlement).
+- `CRITICAL` - Permission to allow critical notifications (Requires entitlement).
 
 #### Example
 
@@ -2590,6 +2592,8 @@ The function is passed a single object parameter where the key is the notificati
      * `cordova.plugins.diagnostic.remoteNotificationType.ALERT` => alert style is not set to "None" (i.e. "Banners" or "Alerts").
      * `cordova.plugins.diagnostic.remoteNotificationType.BADGE` => "Badge App Icon" switch is ON.
      * `cordova.plugins.diagnostic.remoteNotificationType.SOUND` => "Sounds"/"Alert Sound" switch is ON.
+     * `cordova.plugins.diagnostic.remoteNotificationType.TIME_SENSITIVE` => "Time Sensitive Alerts" switch is ON (Requires Entitlement).
+     * `cordova.plugins.diagnostic.remoteNotificationType.CRITICAL` => "Critical Alerts" switch is ON (Requires Entitlements).
 - {Function} errorCallback - The callback which will be called when an error occurs. The function is passed a single string parameter containing the error message.
 
 #### Example usage
